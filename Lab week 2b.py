@@ -77,7 +77,7 @@ print(updated_list)
 
 
 #4
-import datetime
+from datetime import datetime
 start_dict = {'noah': '2/23/1999',
               'sarah':'9/1/2001',
               'zach': '8/8/2005'}
@@ -86,3 +86,26 @@ start_dict = {'noah': '2/23/1999',
 #              'Zach': datetime.datetime(2005, 8, 8)}
 #HINTS: The datetime library has a function that turns strings of the right format into dates
 #       Again, start with a for-loop, but make a dictionary comprehension in the end
+
+# used this link to figure out the datetime notation
+# https://www.freecodecamp.org/news/python-string-to-datetime-how-to-convert-an-str-to-a-date-time-with-strptime/#:~:text=The%20strptime()%20method%20creates,convert%20strings%20to%20datetime%20objects.
+
+new1_dict = {}
+for key, val in start_dict.items():
+    new1_dict[key.capitalize()] = datetime.strptime(val, '%m/%d/%Y')
+print(new1_dict)
+# referenced the below stack overflow link to come to this solution
+# https://stackoverflow.com/questions/1024847/how-can-i-add-new-keys-to-a-dictionary
+
+
+new_dict = {key.capitalize():datetime.strptime(val, "%m/%d/%Y") for key, val in start_dict.items()}
+# referenced the slides on dictionary comprehension
+
+print(new_dict)
+
+
+
+
+
+
+
