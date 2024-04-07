@@ -40,8 +40,8 @@ if phrase0_list != phrase0_list[::-1]:
     
     
 phrase1 = 'radar'
-phrase1 = phrase1.lower().replace(",", "").replace("!", "").replace(" ", "")              # found this documentation on the replace method
-phrase1_list = [value for value in phrase1]                                               # https://stackoverflow.com/questions/9452108/how-to-use-string-replace-in-python-3-x
+phrase1 = phrase1.lower().replace(",", "").replace("!", "").replace(" ", "")            
+phrase1_list = [value for value in phrase1]                                              
 if phrase1_list == phrase1_list[::-1]:
     print("This is a palindrome")
 if phrase1_list != phrase1_list[::-1]:
@@ -49,8 +49,8 @@ if phrase1_list != phrase1_list[::-1]:
     
     
 phrase2 = 'Microsoft'
-phrase2 = phrase2.lower().replace(",", "").replace("!", "").replace(" ", "")              # found this documentation on the replace method
-phrase2_list = [value for value in phrase2]                                               # https://stackoverflow.com/questions/9452108/how-to-use-string-replace-in-python-3-x
+phrase2 = phrase2.lower().replace(",", "").replace("!", "").replace(" ", "")             
+phrase2_list = [value for value in phrase2]                                              
 if phrase2_list == phrase2_list[::-1]:
     print("This is a palindrome")
 if phrase2_list != phrase2_list[::-1]:
@@ -58,8 +58,8 @@ if phrase2_list != phrase2_list[::-1]:
 
 
 phrase3 = "This isn't a palindrome"
-phrase3 = phrase3.lower().replace(",", "").replace("!", "").replace(" ", "")              # found this documentation on the replace method
-phrase3_list = [value for value in phrase3]                                               # https://stackoverflow.com/questions/9452108/how-to-use-string-replace-in-python-3-x
+phrase3 = phrase3.lower().replace(",", "").replace("!", "").replace(" ", "")              
+phrase3_list = [value for value in phrase3]                                              
 if phrase3_list == phrase3_list[::-1]:
     print("This is a palindrome")
 if phrase3_list != phrase3_list[::-1]:
@@ -90,7 +90,7 @@ while True:
 # list that contains each string in all lower-case letters, unless the modified string begins with
 # the letter "a" or "b", in which case it should drop it from the result.
 
-string_list = ["Ah! ", "the ", "big ", "grey ", "fox ", "is ", "blue!"]                                         # referenced chatGPT for help on list comprehension formatting
+string_list = ["Ah! ", "the ", "big ", "grey ", "fox ", "is ", "blue!"]                                         # referenced chatGPT for format of list comprehension formatting
 new_list = [i.lower() for i in string_list if i[0].lower() != 'a' and i[0].lower() != 'b']                      # in both this question and the next
 print(new_list)
 
@@ -100,8 +100,8 @@ print(new_list)
 # turns them into the following dictionary: {'IL':'Illinois', 'IN':'Indiana', 'MI':'Michigan', 'WI':'Wisconsin'}
 
 
-short_names = ['IL', 'IN', 'MI', 'WI']
-long_names  = ['Illinois', 'Indiana', 'Michigan', 'Wisconsin']
+short_names = ['IL', 'IN', 'MI', 'WI']                                          # dictionary comprehension reference https://www.freecodecamp.org/news/dictionary-comprehension-in-python-explained-with-examples/
+long_names  = ['Illinois', 'Indiana', 'Michigan', 'Wisconsin']                  # and class slides
 
 list_length = range(len(short_names))
 dictionary = {short_names[i]: long_names[i] for i in list_length}
@@ -121,7 +121,7 @@ print(dictionary)
 start_list = [(10, 0), (100, 6), (0, 0), (-15, -100), (5, 4)]              
 
 def goldilocks(value):
-    b, c = value                                                                                # referenced chatgpt for unpacking tuples.
+    b, c = value                                                                # referenced chatgpt for unpacking tuples.
     summation = b + c
     if summation > 10:
         output = "big"
@@ -149,7 +149,7 @@ def my_func(a = 10):
 x = my_func()
 
 # the new way enables us to save memory because it limits the amount of global variables the computer needs to store, and
-# it enables us to manually change new values for a such that we can use my_func() in other scenarios as needed.
+# it enables us to manually change new values for "a" such that we can use my_func() in other scenarios as needed.
 
 
 # Question 2.3: Write a function that can generate a random password from
@@ -186,16 +186,16 @@ def nu_pswd(pswd_length, special_check = True):
         
         r_num_gen_numbers = [random.randint(48, 57) for value in range(0, int(pswd_length) // 3)]
         
-        r_num_gen = r_num_gen_cap + r_num_gen_lower  + r_num_gen_numbers                                      # adding lists = https://stackoverflow.com/questions/1720421/how-do-i-concatenate-two-lists-in-python
+        r_num_gen = r_num_gen_cap + r_num_gen_lower + r_num_gen_numbers                                       # adding lists = https://stackoverflow.com/questions/1720421/how-do-i-concatenate-two-lists-in-python
         
         pswd = assign_num_to_char(r_num_gen)
-        return pswd
+        return print("Your new password is: ", pswd)
     else: 
         special_check = True
         r_num_gen = [random.randint(33, 126) for value in range(0, int(pswd_length))]
         
         pswd = assign_num_to_char(r_num_gen)
-        return pswd
+        return print("Your new password is:", pswd)
         
 pswd_length = int(input("Enter number of characters for your password: "))
 special_char = input("Do you want speical characters? Type (True) or (False): ")
@@ -223,22 +223,40 @@ nu_pswd(pswd_length, special_char)
 # Finally, create one instance of your new class, and add four movies to
 # it. Call your what_to_watch method once at the end.
 
-
-
-class MovieDatabase():
-    def __init__(self, user_name):
-        name_of_user = user_name
-        pass
+class MovieDatabase:                                                            # used this documentation as reference
+    movies = []                                                                 # https://docs.python.org/3/tutorial/classes.html#class-and-instance-variables        
     
-    def add_movie(movie_name, genre, rating):
+    def __init__(self, user_name):
+        self.user_name = user_name
+    
+    def add_movie(self, movie_name, genre, rating):
         self.movie_name = movie_name
         self.genre = genre
         self.rating = rating
+        movie = [movie_name, genre, rating]
+        self.movies.append(movie)
         
-    def what_to_watch():
-        #needs to pick a movie from the database randomly?
-        #needs a print statment that pulls all the information
-        #cant crash if no movies in the database 
-        pass
+        
+    def what_to_watch(self):
+        if len(self.movies) == 0:
+            print("no movies in the list!")
+        else:
+            random_number = random.randint(0, len(self.movies) - 1)
+            print(self.movies[random_number])
 
-person_name = input("What is your name:")
+
+test = MovieDatabase(user_name = "Daniel Avila")
+test.add_movie("Bourne Identity", "action", "5")
+test.add_movie("Sinbad", "cartoon", "4")
+test.add_movie("Buffalo 66", "drama", "5")
+test.add_movie("Fitzcarrado", "drama", "3")
+
+test.user_name
+test.what_to_watch()
+test.movies
+
+# to reset the list, use...
+test.movies = []
+    
+
+    
