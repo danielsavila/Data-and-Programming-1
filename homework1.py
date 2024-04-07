@@ -121,7 +121,7 @@ print(dictionary)
 start_list = [(10, 0), (100, 6), (0, 0), (-15, -100), (5, 4)]              
 
 def goldilocks(value):
-    b, c = value                                                                 # referenced chatgpt for unpacking tuples.
+    b, c = value                                                                                # referenced chatgpt for unpacking tuples.
     summation = b + c
     if summation > 10:
         output = "big"
@@ -163,47 +163,46 @@ x = my_func()
 # second similar keyword argument for numbers. Use one of the two 
 # libraries below in your solution:
 
-pswd_length = input("Enter number of characters for your password: ")
 
-from numpy import random
+import random
 
 def assign_num_to_char(r_num_gen):
-    char_transform = [chr(num) for num in r_num_gen]
-    complete_pswd = ''.join(char_transform)
+    char_transform = [chr(num) for num in r_num_gen]                                                # documentation on chr() https://www.w3schools.com/python/ref_func_chr.asp
+    complete_pswd = ''.join(char_transform)                                                         # join function https://pythonbasics.org/join/
     return complete_pswd
 
-def nu_pswd(pswd_length, special_char = True):
+def nu_pswd(pswd_length, special_check = True):
     if int(pswd_length) > 16:
         print("password length is too long!")
         
     elif int(pswd_length) < 8:
         print("password is too short!")
     
-    else:
-        if special_char == False:
-            r_num_gen_cap = random.randint(64, 90, size = .5 * pswd_length)                 # used this table to determine characters
-            r_num_gen_lower = random.randint(96, 126, size = .5 * pswd_length)              # https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/ASCII-Table.svg/2522px-ASCII-Table.svg.png
-            r_num_gen = r_num_gen_cap + r_num_gen_lower
-            pswd = assign_num_to_char(r_num_gen)
-            return pswd
-        else: 
-            r_num_gen = random.randint(32, 126)
-            pswd = assign_num_to_char(r_num_gen)
-            return pswd
-
-nu_pswd(pswd_length)
-
+    elif special_char == "False" or "false": 
+        special_check == False
+        r_num_gen_cap = [random.randint(65, 90) for value in range(0, int(pswd_length) // 3)]                 # integer division https://stackoverflow.com/questions/21316968/integer-division-in-python-2-and-python-3
+                                                                                                              # used this table to determine characters
+        r_num_gen_lower = [random.randint(97, 122) for value in range(0, int(pswd_length) // 3)]              # https://en.wikipedia.org/wiki/List_of_Unicode_characters
+        
+        r_num_gen_numbers = [random.randint(48, 57) for value in range(0, int(pswd_length) // 3)]
+        
+        r_num_gen = r_num_gen_cap + r_num_gen_lower  + r_num_gen_numbers                                      # adding lists = https://stackoverflow.com/questions/1720421/how-do-i-concatenate-two-lists-in-python
+        
+        pswd = assign_num_to_char(r_num_gen)
+        return pswd
+    else: 
+        special_check = True
+        r_num_gen = [random.randint(33, 126) for value in range(0, int(pswd_length))]
+        
+        pswd = assign_num_to_char(r_num_gen)
+        return pswd
+        
+pswd_length = int(input("Enter number of characters for your password: "))
+special_char = input("Do you want speical characters? Type (True) or (False): ")
     
+nu_pswd(pswd_length, special_char)
 
 
-plan:
-    create a function (need to include the keyword argument here)
-    randomly generate the characters, including special characters
-        if keyword argument is false, then no special characters
-    use an if statement to check the length of the password
-        if > than 16 or < 8, print a problem and then break:
-    
-  
 # Question 2.4: Create a class named MovieDatabase that takes one argument
 # when an instance is created which stores the name of the person creating
 # the database (in this case, you) as an attribute. Then give it two methods:
@@ -223,3 +222,23 @@ plan:
 #
 # Finally, create one instance of your new class, and add four movies to
 # it. Call your what_to_watch method once at the end.
+
+
+
+class MovieDatabase():
+    def __init__(self, user_name):
+        name_of_user = user_name
+        pass
+    
+    def add_movie(movie_name, genre, rating):
+        self.movie_name = movie_name
+        self.genre = genre
+        self.rating = rating
+        
+    def what_to_watch():
+        #needs to pick a movie from the database randomly?
+        #needs a print statment that pulls all the information
+        #cant crash if no movies in the database 
+        pass
+
+person_name = input("What is your name:")
