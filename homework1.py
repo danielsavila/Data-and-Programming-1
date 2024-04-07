@@ -76,7 +76,6 @@ if phrase3_list != phrase3_list[::-1]:
 
 available_vegetables = ['carrot', 'kale', 'broccoli', 'pepper']
 
-
 while True:
     choice = input('Please pick a vegetable I have available: ')
     var = choice in available_vegetables
@@ -85,28 +84,28 @@ while True:
         break
     else:
         print("we dont have those")
-        
-        
-available_vegetables = ['carrot', 'kale', 'broccoli', 'pepper']
-
-while True:
-    choice = input('Please pick a vegetable I have available: ')
-    if choice.lower() in available_vegetables:
-        print("You can have it.")
-        break
-    else:
-        print("Sorry, we don't have that vegetable available.")
 
 
 # Question 1.4: Write a list comprehension that starts with any list of strings and returns a new
 # list that contains each string in all lower-case letters, unless the modified string begins with
 # the letter "a" or "b", in which case it should drop it from the result.
 
+string_list = ["Ah! ", "the ", "big ", "grey ", "fox ", "is ", "blue!"]                                         # referenced chatGPT for help on list comprehension formatting
+new_list = [i.lower() for i in string_list if i[0].lower() != 'a' and i[0].lower() != 'b']                      # in both this question and the next
+print(new_list)
+
+
 
 # Question 1.5: Beginning with the two lists below, write a single dictionary comprehension that
 # turns them into the following dictionary: {'IL':'Illinois', 'IN':'Indiana', 'MI':'Michigan', 'WI':'Wisconsin'}
+
+
 short_names = ['IL', 'IN', 'MI', 'WI']
 long_names  = ['Illinois', 'Indiana', 'Michigan', 'Wisconsin']
+
+list_length = range(len(short_names))
+dictionary = {short_names[i]: long_names[i] for i in list_length}
+print(dictionary)
 
 
 #############
@@ -119,20 +118,38 @@ long_names  = ['Illinois', 'Indiana', 'Michigan', 'Wisconsin']
 # following list, with the end result being another list holding the strings 
 # your function generates (e.g. ["big", "big", "small"]).
 
-start_list = [(10, 0), (100, 6), (0, 0), (-15, -100), (5, 4)]
+start_list = [(10, 0), (100, 6), (0, 0), (-15, -100), (5, 4)]              
 
-
+def goldilocks(value):
+    b, c = value                                                                 # referenced chatgpt for unpacking tuples.
+    summation = b + c
+    if summation > 10:
+        output = "big"
+        return output
+    elif summation == 10:
+        output = "just right"
+        return output
+    else:
+        output = "small"
+        return output 
+        
+new_list = [goldilocks(i) for i in start_list]
+print(new_list)
+                      
 
 # Question 2.2: The following code is fully-functional, but uses a global
 # variable and a local variable. Re-write it to work the same, but using one
 # argument and no global variable. Use no more than two lines of comments to
 # explain why this new way is preferable to the old way.
 
-a = 10
-def my_func():
+
+def my_func(a = 10):
     b = 40
     return a + b
 x = my_func()
+
+# the new way enables us to save memory because it limits the amount of global variables the computer needs to store, and
+# it enables us to manually change new values for a such that we can use my_func() in other scenarios as needed.
 
 
 # Question 2.3: Write a function that can generate a random password from
@@ -145,9 +162,47 @@ x = my_func()
 # random values chosen should not include special characters. Create a 
 # second similar keyword argument for numbers. Use one of the two 
 # libraries below in your solution:
-#import random
-#from numpy import random
-  
+
+pswd_length = input("Enter number of characters for your password: ")
+
+from numpy import random
+
+def assign_num_to_char(r_num_gen):
+    char_transform = [chr(num) for num in r_num_gen]
+    complete_pswd = ''.join(char_transform)
+    return complete_pswd
+
+def nu_pswd(pswd_length, special_char = True):
+    if int(pswd_length) > 16:
+        print("password length is too long!")
+        
+    elif int(pswd_length) < 8:
+        print("password is too short!")
+    
+    else:
+        if special_char == False:
+            r_num_gen_cap = random.randint(64, 90, size = .5 * pswd_length)                 # used this table to determine characters
+            r_num_gen_lower = random.randint(96, 126, size = .5 * pswd_length)              # https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/ASCII-Table.svg/2522px-ASCII-Table.svg.png
+            r_num_gen = r_num_gen_cap + r_num_gen_lower
+            pswd = assign_num_to_char(r_num_gen)
+            return pswd
+        else: 
+            r_num_gen = random.randint(32, 126)
+            pswd = assign_num_to_char(r_num_gen)
+            return pswd
+
+nu_pswd(pswd_length)
+
+    
+
+
+plan:
+    create a function (need to include the keyword argument here)
+    randomly generate the characters, including special characters
+        if keyword argument is false, then no special characters
+    use an if statement to check the length of the password
+        if > than 16 or < 8, print a problem and then break:
+    
   
 # Question 2.4: Create a class named MovieDatabase that takes one argument
 # when an instance is created which stores the name of the person creating
