@@ -16,7 +16,13 @@
 # Question 1.1: Using a for loop, write code that takes in any list of objects, then prints out:
 # "The value at position __ is __" for every element in the loop, where the first blank is the
 # index location and the second blank the object at that index location.
+index_position = 0
+list1 = ['a', 'b', 'c', 'd']
+list2= range(5)
 
+for i in list2:
+    index_position += 1
+    print('"The value at position', index_position, 'is', i)
 
 # Question 1.2: A palindrome is a word or phrase that is the same both forwards and backwards. Write
 # code that takes a variable of any string, then tests to see whether it qualifies as a palindrome.
@@ -24,14 +30,72 @@
 # rejecting the word "Microsoft" and the phrase "This isn't a palindrome". Print the results of these
 # four tests.
 
+phrase0 = 'A man, a plan, a canal, Panama!'
+phrase0 = phrase0.lower().replace(",", "").replace("!", "").replace(" ", "")              # found this documentation on the replace method
+phrase0_list = [value for value in phrase0]                                               # https://stackoverflow.com/questions/9452108/how-to-use-string-replace-in-python-3-x
+if phrase0_list == phrase0_list[::-1]:
+    print("This is a palindrome")
+if phrase0_list != phrase0_list[::-1]:
+    print("This is not a palindrome")
+    
+    
+phrase1 = 'radar'
+phrase1 = phrase1.lower().replace(",", "").replace("!", "").replace(" ", "")              # found this documentation on the replace method
+phrase1_list = [value for value in phrase1]                                               # https://stackoverflow.com/questions/9452108/how-to-use-string-replace-in-python-3-x
+if phrase1_list == phrase1_list[::-1]:
+    print("This is a palindrome")
+if phrase1_list != phrase1_list[::-1]:
+    print("This is not a palindrome")   
+    
+    
+phrase2 = 'Microsoft'
+phrase2 = phrase2.lower().replace(",", "").replace("!", "").replace(" ", "")              # found this documentation on the replace method
+phrase2_list = [value for value in phrase2]                                               # https://stackoverflow.com/questions/9452108/how-to-use-string-replace-in-python-3-x
+if phrase2_list == phrase2_list[::-1]:
+    print("This is a palindrome")
+if phrase2_list != phrase2_list[::-1]:
+    print("This is not a palindrome")   
+
+
+phrase3 = "This isn't a palindrome"
+phrase3 = phrase3.lower().replace(",", "").replace("!", "").replace(" ", "")              # found this documentation on the replace method
+phrase3_list = [value for value in phrase3]                                               # https://stackoverflow.com/questions/9452108/how-to-use-string-replace-in-python-3-x
+if phrase3_list == phrase3_list[::-1]:
+    print("This is a palindrome")
+if phrase3_list != phrase3_list[::-1]:
+    print("This is not a palindrome")   
+
+
 
 # Question 1.3: The code below pauses to wait for user input, before assigning the user input to the
 # variable. Beginning with the given code, check to see if the answer given is an available
 # vegetable. If it is, print that the user can have the vegetable and end the bit of code.  If
 # they input something unrecognized by our list, tell the user they made an invalid choice and make
 # them pick again. Repeat until they pick a valid vegetable.
+
+
 available_vegetables = ['carrot', 'kale', 'broccoli', 'pepper']
-choice = input('Please pick a vegetable I have available: ')
+
+
+while True:
+    choice = input('Please pick a vegetable I have available: ')
+    var = choice in available_vegetables
+    if var == True:
+        print("you can have it")
+        break
+    else:
+        print("we dont have those")
+        
+        
+available_vegetables = ['carrot', 'kale', 'broccoli', 'pepper']
+
+while True:
+    choice = input('Please pick a vegetable I have available: ')
+    if choice.lower() in available_vegetables:
+        print("You can have it.")
+        break
+    else:
+        print("Sorry, we don't have that vegetable available.")
 
 
 # Question 1.4: Write a list comprehension that starts with any list of strings and returns a new
