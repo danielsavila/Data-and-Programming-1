@@ -2,8 +2,8 @@
 # Spring 2024
 # Homework 2
 
-# YOUR NAME HERE
-# YOUR GITHUB USER NAME HERE
+# Daniel Avila
+# danielsavila
 
 # Due date: Sunday April 21st before midnight
 # Write your answers in the space between the questions, and commit/push only
@@ -24,15 +24,40 @@
 
 # PART 1: Macro Data Exploration
 
+
+import pandas as pd
+import os
+
+
 # Question 1.1: Load the population estimates file into a dataframe. Specify
 # an absolute path using the Python os library to join filenames, so that
 # anyone who clones your homework repo only needs to update one for all
 # loading to work.
 
+PATH = r"C:\Users\AVILA\OneDrive\Documents\GitHub\Data-and-Programming-1"
+file_path = os.path.join(PATH, "NST-EST2022-ALLDATA.csv")
+
+census = pd.read_csv(file_path)
+
+census.shape
+census.describe()
+census.columns
+
+
 
 # Question 1.2: Your data only includes fips codes for states (STATE).  Use 
 # the us library to crosswalk fips codes to state abbreviations.  Drop the
 # fips codes.
+
+# all code below was influenced by what I found at this link: https://pypi.org/project/us/
+                                                                  
+import us as us
+                     
+us.states.mapping('fips', 'abbr')
+
+def remove_fips():
+    
+
 
 
 # Question 1.3: Then show code doing some basic exploration of the

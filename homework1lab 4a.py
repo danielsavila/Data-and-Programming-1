@@ -41,16 +41,36 @@ df.loc[[2014], ["unemp_usa"]] = 6.2
 #   and one for the mean.
 
 df["unemp_mean_na"] = df.loc[:, ["unemp_usa", "unemp_canada", "unemp_mexico"]].mean(axis = 1)
-df
+
+df["gdp_sum_na"] = df.loc[:, ["gdp_usa", "gdp_canada", "gdp_mexico"]].sum(axis = 1)
 
 
 #4. Display only the values for Canada in 2015 and 2016.
 
+canada = df.loc[[2015, 2016], ["gdp_canada", "unemp_canada"]]
+canada
+
 #5. Create a new variable that is a subset of the main data showing
 #   only columns for Mexico from 2014 and later.
+
+mexico = df.loc[2014:, ["gdp_mexico", "unemp_mexico"]]
+mexico
 
 #6. Calculate a new column in this subset called 'gdp_delta' which
 #   shows the change in GDP for each country from year to year.  
 #   Hint: you'll need to look up a new Series method for this. All 
 #   the new values will be NaN for the first year.
+
+df["gdp_delta_usa"] = df.loc[:, "gdp_usa"].diff()                               #https://stackoverflow.com/questions/57801048/subtract-previous-row-value-from-the-current-row-value-in-a-pandas-column
+df["gdp_delta_canada"] = df.loc[:, "gdp_canada"].diff()
+df["gdp_delta_mexico"] = df.loc[:, "gdp_mexico"].diff()
+
+df.columns
+
+
+
+
+
+
+
 
