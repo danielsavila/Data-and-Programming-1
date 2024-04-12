@@ -11,7 +11,7 @@ import os
 PATH = r"C:\Users\AVILA\OneDrive\Documents\GitHub\Data-and-Programming-1"
 file_path = os.path.join(PATH, "iris.csv")
 
-iris = pd.get_csv("iris.csv")
+iris = pd.read_csv("iris.csv")
 
 #1. Explore the data.  How many categories of flowers are there? 
 
@@ -73,12 +73,24 @@ iris.loc[iris["species"] == "versicolor"].shape
 #   a zscore?  How would you make this a zscore instead?  What's the problem
 #   with doing this without accounting for the values in the species column?
 
-iris.apply(lambda iris[i]: (iris[i] / iris[:,i]i.mean())
+iris["adj_sepal_length"] = iris["sepal_length"].apply(lambda x: x / iris["sepal_length"].mean())
+iris["adj_sepal_width"] = iris["sepal_width"].apply(lambda x: x / iris["sepal_length"].mean())           
+iris["adj_petal_length"] = iris["petal_length"].apply(lambda x: x / iris["petal_length"].mean())
+iris["adj_petal_width"] = iris["petal_width"].apply(lambda x: x / iris["petal_width"].mean())
+
+# a z score by definition is the value minus the mean, all divided by the standard deviation. The calculation above is simply normalizing by the mean
+# I would make this a z score by changing the lambda function to read * (lambda x: (x - iris["column"].mean()) / iris["column"].std()) *  
+# if you dont account for the values of the species column, you are adjusting all of the flowers to be on the same relative scale. 
+# in other words, you are comparing two things as if they were similar, but the flowers are inherintly different, so they are not a good comparison across eachother.
+
+          
 
 #5. Create a new column named "petal_area" which is equal to the length
 #   times the width.  Note that this isn't really the area of the petal, since
 #   petals presumably aren't rectangles.
 
+iris["petal_area"] = iris["petal_length"] * iris["petal_width"]
+iris
 
 #6. Subset the data to a new variable that is a dataframe with only virginica 
 #   flowers.  Now add a new column to this subset that is equal to 1 if the 
@@ -86,4 +98,16 @@ iris.apply(lambda iris[i]: (iris[i] / iris[:,i]i.mean())
 #   SettingWithCopyWarning message?  Modify your copying to do away with the 
 #   warning.  Hint: You can create this with apply, or with map if you also
 #   create a global variable holding the mean.
+
+iris_virginica = iris[iris["species"] == "virginica"]
+
+def function(cell):
+    if cell > iris_virginica["sepal_length"].mean():
+        return 1
+    else:
+        return 0
+        
+iris_virginica["sepal_length_binary"] = iris_virginica.loc[:, "sepal_length"].apply(function)
+iris_virginica
+
 
