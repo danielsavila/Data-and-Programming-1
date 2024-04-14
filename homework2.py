@@ -44,36 +44,73 @@ census.describe()
 census.columns
 
 
-
 # Question 1.2: Your data only includes fips codes for states (STATE).  Use 
 # the us library to crosswalk fips codes to state abbreviations.  Drop the
-# fips codes.
+# fips codes
 
 # all code below was influenced by what I found at this link: https://pypi.org/project/us/
-                                                                  
+
+# when I was running this dictionary, the state.fips was returning as a string,
+# so in order to get the mapping to work, needed to convert to int in the variable                                                           
 import us as us
-                     
-us.states.mapping('fips', 'abbr')
-
-def remove_fips():
-    
+fips_to_abbr = {int(state.fips): state.abbr for state in us.states.STATES_AND_TERRITORIES}
+fips_to_abbr
 
 
+census["STATE"] = census["STATE"].map(fips_to_abbr)                   
 
-# Question 1.3: Then show code doing some basic exploration of the
+census["STATE"].head(30).tail(30)
+
+ # Question 1.3: Then show code doing some basic exploration of the
 # dataframe; imagine you are an intern and are handed a dataset that your
 # boss isn't familiar with, and asks you to summarize for them.  Do not 
 # create plots or use groupby; we will do that in future homeworks.  
 # Show the relevant exploration output with print() statements.
 
+# used this code to find duplicates https://www.statology.org/pandas-find-duplicates/
+
+census["STATE"].head(15)
+duplicated_states = census[census.duplicated(["STATE"])]                
+duplicated_states["STATE"]
+census.loc[22, "STATE"]
+
+# 14 values in the state column that we dont know what they are referencing to
+
+census.shape
+
+# which means we have 52 observations here of states and territories.
+
+# adding a column of the duplicated states to the census datset and filtering out duplicates
+census["duplicates"] = census.duplicated(["STATE"])
+census["duplicates"].head(30)
+
+filtered_census = census[census["duplicates"] == False]
+
+# when I filtered in the above step, it left behind one value of NaN at index position 0
+# drop method citation https://www.statology.org/pandas-drop-row-by-index/
+filtered_census = filtered_census.drop(index = 0)
+
+filtered_census.columns
+filtered_census["avg_pop_estimate"] = filtered_census.loc[:, ["POPESTIMATE2020", "POPESTIMATE2021", "POPESTIMATE2022"]].mean(axis = 1)
+
+print(filtered_census[["STATE", "avg_pop_estimate"]])
 
 # Question 1.4: Subset the data so that only observations for individual
 # US states remain, and only state abbreviations and data for the population
 # estimates in 2020-2022 remain.  The dataframe should now have 4 columns.
 
+filtered_census["STATE"].unique
+
+# dropping Puerto Rico
+filtered_census = filtered_census.drop(index = 65)
+filtered_census.head
+filtered_census = filtered_census.loc[:, ["STATE", "POPESTIMATE2020", "POPESTIMATE2021", "POPESTIMATE2022"]]
+
 
 # Question 1.5: Show only the 10 largest states by 2021 population estimates,
 # in decending order.
+
+filtered_census
 
 
 # Question 1.6: Create a new column, POPCHANGE, that is equal to the change in
