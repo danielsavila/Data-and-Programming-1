@@ -122,6 +122,9 @@ pop_filtered_census[pop_filtered_census["POPCHANGE"] > stats.stdev(pop_filtered_
 pop_filtered_census_w2l = pd.wide_to_long(pop_filtered_census, stubnames = "POPESTIMATE", i = "STATE", j = "year")
 pop_filtered_census_w2l[pop_filtered_census_w2l["POPCHANGE"] == 660]
 pop_filtered_census_w2l = pop_filtered_census_w2l.drop("POPCHANGE", axis = 1)
+#https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.reset_index.html
+pop_filtered_census_w2l = pop_filtered_census_w2l.reset_index()
+pop_filtered_census_w2l
 # we need to drop the POPCHANGE column because it is taking the value that we calculated previously, and now adding it as a cell for 
 # year 2020, 2021, and 2022. However what we calculated is only the change from 2020 to 2022, so the 2021 and 2020 values are incorrect.
 
@@ -131,8 +134,8 @@ pop_filtered_census_w2l = pop_filtered_census_w2l.drop("POPCHANGE", axis = 1)
 # referenced documentation
 #https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.melt.html
 pop_filtered_census_melt = pd.melt(pop_filtered_census, id_vars = "STATE", value_vars = ["POPESTIMATE2020", "POPESTIMATE2021", "POPESTIMATE2022"], var_name = "year")
+pop_filtered_census_melt["year"] = pop_filtered_census_melt["year"].str.strip("POPESTIMATE")
 pop_filtered_census_melt
-
 
 # Question 2.3: Open the state-visits.xlsx file in Excel, and fill in the VISITED
 # column with a dummy variable for whether you've visited a state or not.  If you
@@ -142,6 +145,22 @@ pop_filtered_census_melt
 # dataframe, only keeping values that appear in both dataframes.  Are any 
 # observations dropped from this?  Show code where you investigate your merge, 
 # and display any observations that weren't in both dataframes.
+
+#https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html
+file_path2 = os.path.join(PATH, "state-visits.xlsx")
+statevisit = pd.read_excel(file_path2)
+statevisit
+merged_df = census.merge(statevisit, how = "outer", on = "STATE", validate = "many_to_one", indicator = True)
+merged_df["_merge"].unique()
+non_both = merged_df[(merged_df["_merge"] == "left_only") | (merged_df["_merge"] == "right_only")]
+non_both
+# non_both contains the 15 observations in the census dataset that were not states, AND 3 values from the statevisit dataset that consisted of 
+# PR, DC, and Guam. So what is happening is that the first 15 observations from census are not being matched to the statevisit dataset,
+# and 3 of the observations in the statevisit dataset are not being matched to the census dataset.
+# In total, across both datasets, we had 18 observations which were not matched. 
+filt_merge_df = merged_df[merged_df["_merge"] == "both"]
+filt_merge_df
+# filt_merge_df contains just the observations that existed in both the census and statevisit datasets.
 
 
 
@@ -153,10 +172,22 @@ pop_filtered_census_melt
 # the mean EPU-C value for each state/year, leaving only columns for state, 
 # year, and EPU_Composite, with each row being a unique state-year combination.
 
+file_path3 = os.path.join(PATH, "policy_uncertainty.xlsx")
+pol_uncertainty = pd.read_excel(file_path3)
 
-# Question 2.5) Reshape the EPU data into wide format so that each row is unique 
+pol_uncertainty.tail()
+pol_uncertainty["EPUC_mean"] = pol_uncertainty.groupby(["state", "year"])["EPU_Composite"].transform(lambda x: x.mean()).round(2)
+
+# documentation referenced on the transform function and indexing groupby
+#https://stackoverflow.com/questions/45797633/looping-over-groups-in-a-grouped-dataframe
+#https://pbpython.com/pandas_transform.html
+#https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.transform.html
+
+
+# Question 2.5 Reshape the EPU data into wide format so that each row is unique 
 # by state, and the columns represent the EPU-C values for the years 2022, 
 # 2021, and 2020. 
+
 
 
 # Question 2.6) Finally, merge this data into your merged data from question 2.3, 
