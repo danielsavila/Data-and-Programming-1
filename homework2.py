@@ -194,6 +194,7 @@ pol_uncertainty = pol_uncertainty.drop(["EPU_National", "EPU_State", "month"], a
 pol_uncertainty
 pivoted = pol_uncertainty.pivot_table(index = "state", columns = "year", values = "EPU_Composite")
 pivoted = pivoted.reset_index()
+pivoted
 
 # Question 2.6: Finally, merge this data into your merged data from question 2.3, 
 # making sure the merge does what you expect.
@@ -208,8 +209,11 @@ abbr_to_state
 pivoted["state"] = pivoted["state"].map(abbr_to_state)
 pivoted.head()
 
-filt_merge_df = filt_merge_df.df.merge(pivoted, on_right = "state", on_left = "STATE", how = "left", validate = "one_to_one", indicator = True)
-filt_merge_df.columns
+filt_merge_df.head()
+filt_merge_df = filt_merge_df.drop("_merge", axis = 1)
+filt_merge_df = filt_merge_df.merge(pivoted, right_on = "state", left_on = "STATE", how = "inner", validate = "one_to_one", indicator = True)
+filt_merge_df.head()
+filt_merge_df["_merge"].unique()
 
 # Question 2.7: Using groupby on the VISITED column in the dataframe resulting 
 # from the previous question, answer the following questions and show how you  
@@ -219,10 +223,16 @@ filt_merge_df.columns
 # population you have not visited? c) do states you have visited or states you  
 # have not visited have a higher average EPU-C value in 2022?
 
+filt_merge_df.columns
+filt_merge_df = filt_merge_df.groupby("VISITED")
+filt_merge_df.groups
+# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.nlargest.html
+pop_large_2022 = filt_merge_df.apply(lambda x:x.nlargest(3, "POPESTIMATE2022"))
+pop_large_2022["STATE"]
 
-adf
-
-
+#assuming there is a nsmallest that functions the same way since curious
+pop_small_2022 = filt_merge_df.apply(lambda x:x.nsmallest(3, "POPESTIMATE2022"))
+pop_small_2022["STATE"]
 
 
 # Question 2.8: Transforming data to have mean zero and unit standard deviation
@@ -233,7 +243,8 @@ adf
 # have mean zero and unit standard deviation for each state.  Add these values
 # to a new column named EPU_C_zscore.
 
-
+# this problem set has taken me >30 working hours, this is insanity. I have other work for 
+# other courses so I'm sorry but I've had enough of this for now
 
 
 
