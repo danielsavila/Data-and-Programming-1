@@ -188,11 +188,28 @@ pol_uncertainty["EPUC_mean"] = pol_uncertainty.groupby(["state", "year"])["EPU_C
 # by state, and the columns represent the EPU-C values for the years 2022, 
 # 2021, and 2020. 
 
+# https://pandas.pydata.org/docs/user_guide/reshaping.html
 
+pol_uncertainty = pol_uncertainty.drop(["EPU_National", "EPU_State", "month"], axis = 1)
+pol_uncertainty
+pivoted = pol_uncertainty.pivot_table(index = "state", columns = "year", values = "EPU_Composite")
+pivoted = pivoted.reset_index()
 
-# Question 2.6) Finally, merge this data into your merged data from question 2.3, 
+# Question 2.6: Finally, merge this data into your merged data from question 2.3, 
 # making sure the merge does what you expect.
 
+#need to make the "STATE" column in filt_merge_df to have full state names, or "state" in pol_uncertainty
+# to have the same abbreviations as "STATE".
+
+
+abbr_to_state = {str(state.name): state.abbr for state in us.states.STATES_AND_TERRITORIES}
+abbr_to_state
+
+pivoted["state"] = pivoted["state"].map(abbr_to_state)
+pivoted.head()
+
+filt_merge_df = filt_merge_df.df.merge(pivoted, on_right = "state", on_left = "STATE", how = "left", validate = "one_to_one", indicator = True)
+filt_merge_df.columns
 
 # Question 2.7: Using groupby on the VISITED column in the dataframe resulting 
 # from the previous question, answer the following questions and show how you  
@@ -203,6 +220,11 @@ pol_uncertainty["EPUC_mean"] = pol_uncertainty.groupby(["state", "year"])["EPU_C
 # have not visited have a higher average EPU-C value in 2022?
 
 
+
+
+
+
+
 # Question 2.8: Transforming data to have mean zero and unit standard deviation
 # is often called "standardization", or a "zscore".  The basic formula to 
 # apply to any given value is: (value - mean) / std
@@ -210,3 +232,21 @@ pol_uncertainty["EPUC_mean"] = pol_uncertainty.groupby(["state", "year"])["EPU_C
 # and a function you write, transform the data so that the values for EPU-C
 # have mean zero and unit standard deviation for each state.  Add these values
 # to a new column named EPU_C_zscore.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
