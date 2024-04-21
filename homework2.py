@@ -36,30 +36,20 @@ import os
 
 PATH = r"C:\Users\AVILA\OneDrive\Documents\GitHub\Data-and-Programming-1"
 file_path = os.path.join(PATH, "NST-EST2022-ALLDATA.csv")
-
 census = pd.read_csv(file_path)
-
-census.shape
-census.describe()
-census.columns
-
 
 # Question 1.2: Your data only includes fips codes for states (STATE).  Use 
 # the us library to crosswalk fips codes to state abbreviations.  Drop the
 # fips codes
 
 # all code below was influenced by what I found at this link: https://pypi.org/project/us/
-
 # when I was running this dictionary, the state.fips was returning as a string,
-# so in order to get the mapping to work, needed to convert to int in the variable                                                           
+# so in order to get the mapping to work, needed to convert to int in the variable                                                        
 import us as us
 fips_to_abbr = {int(state.fips): state.abbr for state in us.states.STATES_AND_TERRITORIES}
 fips_to_abbr
-
-
 census["STATE"] = census["STATE"].map(fips_to_abbr)                   
-
-census["STATE"].head(30).tail(30)
+census["STATE"].head(30)
 
  # Question 1.3: Then show code doing some basic exploration of the
 # dataframe; imagine you are an intern and are handed a dataset that your
@@ -68,64 +58,57 @@ census["STATE"].head(30).tail(30)
 # Show the relevant exploration output with print() statements.
 
 # used this code to find duplicates https://www.statology.org/pandas-find-duplicates/
-
-census["STATE"].head(15)
 duplicated_states = census[census.duplicated(["STATE"])]                
 duplicated_states["STATE"]
-census.loc[22, "STATE"]
-
-# 14 values in the state column that we dont know what they are referencing to
-
-census.shape
-
-# which means we have 52 observations here of states and territories.
-
+print("There are", len(duplicated_states["STATE"]), "NaN objects (unknown entries) in the STATE column")
+print("There are", len(census["STATE"].unique()) - 1, "'states' in our data, one of which is Puerto Rico.")
 # adding a column of the duplicated states to the census datset and filtering out duplicates
 census["duplicates"] = census.duplicated(["STATE"])
 census["duplicates"].head(30)
-
 filtered_census = census[census["duplicates"] == False]
-
 # when I filtered in the above step, it left behind one value of NaN at index position 0
 # drop method citation https://www.statology.org/pandas-drop-row-by-index/
 filtered_census = filtered_census.drop(index = 0)
-
-filtered_census.columns
-filtered_census["avg_pop_estimate"] = filtered_census.loc[:, ["POPESTIMATE2020", "POPESTIMATE2021", "POPESTIMATE2022"]].mean(axis = 1)
-
-print(filtered_census[["STATE", "avg_pop_estimate"]])
+print(filtered_census.shape)
+print(filtered_census.columns)
 
 # Question 1.4: Subset the data so that only observations for individual
 # US states remain, and only state abbreviations and data for the population
 # estimates in 2020-2022 remain.  The dataframe should now have 4 columns.
 
 filtered_census["STATE"].unique
-
 # dropping Puerto Rico
 filtered_census = filtered_census.drop(index = 65)
-filtered_census.head
-filtered_census = filtered_census.loc[:, ["STATE", "POPESTIMATE2020", "POPESTIMATE2021", "POPESTIMATE2022"]]
-
+filtered_census.head()
+pop_filtered_census = filtered_census.loc[:, ["STATE", "POPESTIMATE2020", "POPESTIMATE2021", "POPESTIMATE2022"]]
 
 # Question 1.5: Show only the 10 largest states by 2021 population estimates,
 # in decending order.
 
-filtered_census
+# found sort_values method as a response in this link 
+#https://stackoverflow.com/questions/16958499/sort-pandas-dataframe-and-print-highest-n-values
+print(pop_filtered_census.sort_values('POPESTIMATE2021', ascending = False).head(10))
 
 
 # Question 1.6: Create a new column, POPCHANGE, that is equal to the change in
 # population from 2020 to 2022.  How many states gained and how many lost
 # population between these estimates?
 
+pop_filtered_census["POPCHANGE"] = pop_filtered_census["POPESTIMATE2022"] - pop_filtered_census["POPESTIMATE2020"]
+print(pop_filtered_census["POPCHANGE"])
 
 # Question 1.7: Show all the states that had an estimated change in either
 # direction of smaller than 1000 people. 
 
+pop_filtered_census[(pop_filtered_census["POPCHANGE"] > 1000) | (pop_filtered_census["POPCHANGE"] < -1000)]
 
 # Question 1.8: Show the states that had a population growth or loss of 
 # greater than one standard deviation.  Do not create a new column in your
 # dataframe.  Sort the result by decending order of the magnitude of 
 # POPCHANGE.
+
+import statistics as stats
+pop_filtered_census[pop_filtered_census["POPCHANGE"] > stats.stdev(pop_filtered_census["POPCHANGE"])]
 
 #PART 2: Data manipulation
 
@@ -134,9 +117,21 @@ filtered_census
 # in the index.  What happened to the POPCHANGE column, and why should it be dropped?
 # Explain in a brief (1-2 line) comment.
 
+# refrenced documentation
+# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.wide_to_long.html
+pop_filtered_census_w2l = pd.wide_to_long(pop_filtered_census, stubnames = "POPESTIMATE", i = "STATE", j = "year")
+pop_filtered_census_w2l[pop_filtered_census_w2l["POPCHANGE"] == 660]
+pop_filtered_census_w2l = pop_filtered_census_w2l.drop("POPCHANGE", axis = 1)
+# we need to drop the POPCHANGE column because it is taking the value that we calculated previously, and now adding it as a cell for 
+# year 2020, 2021, and 2022. However what we calculated is only the change from 2020 to 2022, so the 2021 and 2020 values are incorrect.
 
 # Question 2.2: Repeat the reshaping using the melt method.  Clean up the result so
 # that it is the same as the result from 2.1 (without the POPCHANGE column).
+
+# referenced documentation
+#https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.melt.html
+pop_filtered_census_melt = pd.melt(pop_filtered_census, id_vars = "STATE", value_vars = ["POPESTIMATE2020", "POPESTIMATE2021", "POPESTIMATE2022"], var_name = "year")
+pop_filtered_census_melt
 
 
 # Question 2.3: Open the state-visits.xlsx file in Excel, and fill in the VISITED
@@ -147,6 +142,7 @@ filtered_census
 # dataframe, only keeping values that appear in both dataframes.  Are any 
 # observations dropped from this?  Show code where you investigate your merge, 
 # and display any observations that weren't in both dataframes.
+
 
 
 # Question 2.4: The file policy_uncertainty.xlsx contains monthly measures of 
