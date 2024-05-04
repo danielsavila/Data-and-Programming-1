@@ -178,19 +178,27 @@ ax.set_xlabel("acceleration")
 
 fig.suptitle("Changes in MPG")
 fig.text(0, .5, "mpg", ha = "center")
-fig.savefig("C:/Users/AVILA/OneDrive/Documents/GitHub/Data-and-Programming-1")
-
-
-
+fig.savefig("C:/Users/AVILA/OneDrive/Documents/GitHub/Data-and-Programming-1/")
 
 
 # Question 1.6: Are cars from the USA, Japan, or Europe the least fuel
 # efficient, on average?  Answer this with a plot and a one-line comment.
+data.columns
+sns.boxplot(data = data, x = data["origin"], y = data["mpg"])
+
+#japanese cars are the most fuel effecient, they have the highest average,
+# the highest ourliers, and the highest minimum fuel economy.
+
 
 # Question 1.7: Using Seaborn, create a scatter plot of mpg versus displacement,
 # while showing dots as different colors depending on the country of origin.
 # Explain in a one-line comment what this plot says about the results of 
 # question 1.6.
+
+groupby = data.groupby("origin")
+groupby.head()
+sns.scatterplot(data = data, x = groupby["displacement"], y = groupby["mpg"])
+#need to finish this question
 
 # Question 2: The file unemp.csv contains the monthly seasonally-adjusted unemployment
 # rates for US states from January 2020 to December 2022. Load it as a dataframe, as well
