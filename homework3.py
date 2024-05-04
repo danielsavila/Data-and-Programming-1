@@ -155,7 +155,9 @@ sns.boxplot(data = data, x = data["cylinders"], y = data["mpg"])
 # Finally, use the savefig method to save this figure to your repo.  If any
 # labels or values overlap other chart elements, go back and adjust spacing.
 
-fig, axs = plt.subplots(2, 2)
+#again used this: https://matplotlib.org/stable/gallery/subplots_axes_and_figures/demo_constrained_layout.html#sphx-glr-gallery-subplots-axes-and-figures-demo-constrained-layout-py
+
+fig, axs = plt.subplots(2, 2, layout = 'constrained')
 ax = axs[0, 0]
 ax.scatter(data["displacement"], data["mpg"], color = "red", label = "displacement")
 ax.set_xlabel("displacement")
@@ -175,8 +177,8 @@ ax.set_yticks([])
 ax.set_xlabel("acceleration")
 
 fig.suptitle("Changes in MPG")
-fig.ylabel("mpg")
-plt.show()
+fig.text(0, .5, "mpg", ha = "center")
+fig.savefig("C:/Users/AVILA/OneDrive/Documents/GitHub/Data-and-Programming-1")
 
 
 
