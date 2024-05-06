@@ -36,6 +36,9 @@ import os
 import matplotlib.dates as mdates
 import statsmodels.api as sm
 
+os.getcwd()
+base_path = str(os.getcwd()) + "/"
+
 x = pd.date_range(start='1990/1/1', end='1991/12/1', freq='MS')
 y1 = np.random.normal(10, 2, len(x))
 y2 = [np.sin(v)+10 for v in range(len(x))]
@@ -56,6 +59,7 @@ ax.set_ylabel("Value")
 fig.legend(loc = "outside upper right")
 
 ax.set_title("HW3 Q1.1", loc = "center", y = 2.4)
+fig.savefig(base_path + "/q1_1plot.png")
 plt.show()
 
 
@@ -73,6 +77,7 @@ ax.plot(redx, redy, color = "Red", label = "Red")
 ax.plot(bluex, bluey, color = "Blue", label = "Blue")
 ax.legend(loc = "center left")
 ax.set_title("X marks the spot")
+fig.savefig(base_path + "/q1_2plot.png")
 plt.show()
 
 
@@ -82,8 +87,6 @@ plt.show()
 # one that has a smaller displacement.  Test the same hypothesis for mpg
 # against horsepower and weight.
 
-os.getcwd()
-base_path = str(os.getcwd()) + "/"
 file_loc = os.path.join(base_path, "mpg.csv")
 
 data = pd.read_csv(file_loc)
@@ -103,6 +106,7 @@ dis_result.summary()
 fig, ax = plt.subplots()
 ax.scatter(data["mpg"], data["displacement"], label = "mpg to displacement")
 ax.legend()
+fig.savefig(base_path + "/q1_3aplot.png")
 plt.show()
 
 
@@ -117,12 +121,14 @@ hw_result.summary()
 fig, ax = plt.subplots()
 ax.scatter(data["mpg"], data["horsepower"], color = "red", label = "mpg to horsepower")
 ax.legend()
+fig.savefig(base_path + "/q1_3bplot.png")
 plt.show()
 
 #plotting mpg to horsepower
 fig, ax = plt.subplots()
 ax.scatter(data["mpg"], data["weight"], color = "green", label = "mpg to weight")
 ax.legend()
+fig.savefig(base_path + "/q1_3cplot.png")
 plt.show()
 
 # Question 1.4: Continuing with the data from question 1.3, create a scatter plot 
@@ -134,6 +140,7 @@ plt.show()
 fig, ax = plt.subplots()
 ax.scatter(data["cylinders"], data["mpg"], label = "cylinders to mpg")
 ax.legend()
+fig.savefig(base_path + "/q1_4plot.png")
 plt.show()
 
 # this is similar to being long to wide instead of wide to long, we have multiple observations of
@@ -141,6 +148,7 @@ plt.show()
 
 #referenced this: https://seaborn.pydata.org/generated/seaborn.boxplot.html
 sns.boxplot(data = data, x = data["cylinders"], y = data["mpg"])
+fig.savefig(base_path + "/q1_4aplot.png")
 plt.show()
 
 # Question 1.5: Continuing with the data from question 1.3, create a two-by-two 
@@ -180,13 +188,14 @@ ax.set_xlabel("acceleration")
 
 fig.suptitle("Changes in MPG")
 fig.text(0, .5, "mpg", ha = "center")
-fig.savefig(base_path + "/firstfig.png")
+fig.savefig(base_path + "/q1_5.png")
 plt.show()
 
 # Question 1.6: Are cars from the USA, Japan, or Europe the least fuel
 # efficient, on average?  Answer this with a plot and a one-line comment.
 data.columns
 sns.boxplot(data = data, x = data["origin"], y = data["mpg"])
+fig.savefig(base_path + "/q1_6plot.png")
 plt.show()
 #japanese cars are the most fuel effecient, they have the highest average, the highest ourliers, and the highest minimum fuel economy.
 
@@ -196,9 +205,8 @@ plt.show()
 # Explain in a one-line comment what this plot says about the results of 
 # question 1.6.
 
-groupby = data.groupby("origin")
-groupby.head()
 sns.scatterplot(data = data, x = data["displacement"], y = data["mpg"], hue = "origin")
+fig.savefig(base_path + "/q1_7plot.png")
 plt.show()
 
 # Question 2: The file unemp.csv contains the monthly seasonally-adjusted unemployment
@@ -306,7 +314,7 @@ ax = axs[4,1]
 ax.plot(kentucky["date"], kentucky["unemp_rate"], color = "black")
 ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
 
-fig.savefig(base_path + "/secondfig.png")
+fig.savefig(base_path + "/q2_2plot.png")
 plt.show()
 
 
