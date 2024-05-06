@@ -179,7 +179,7 @@ ax.set_xlabel("acceleration")
 
 fig.suptitle("Changes in MPG")
 fig.text(0, .5, "mpg", ha = "center")
-fig.savefig("C:/Users/AVILA/OneDrive/Documents/GitHub/Data-and-Programming-1/")
+fig.savefig(base_path)
 plt.show()
 
 # Question 1.6: Are cars from the USA, Japan, or Europe the least fuel
@@ -231,14 +231,12 @@ merged_df["_merge"].unique()
 #    2.2: Calculate the log-first-difference (LFD) of the EPU-C data
 merged_df.columns
 merged_df = merged_df.drop(["year", "month", "day"], axis = 1)
-groupbyy = merged_df.groupby("state")
-groupbyy["epu_composite"] = np.log(groupbyy["epu_composite"]) - np.log(groupbyy["epu_composite"].shift())
-states_abbr = merged_df["state"].unique()
 
 #need to create a new dataframe so that I can get the log first difference of each state seperately
 # without using the last value of ex. Alabama being used to calculate the first value of Arkansas
 
 ldf_df = pd.DataFrame(data = None, columns = merged_df.columns)
+states_abbr = merged_df["state"].unique()
 for abbr in states_abbr:
     holding_df = merged_df[merged_df["state"] == abbr]
     holding_df["epu_composite"] = np.log(holding_df["epu_composite"]) - np.log(holding_df["epu_composite"].shift())
@@ -307,12 +305,31 @@ ax = axs[4,1]
 ax.plot(kentucky["date"], kentucky["unemp_rate"], color = "black")
 ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
 
-fig.savefig("C:/Users/AVILA/OneDrive/Documents/GitHub/Data-and-Programming-1/")
+fig.savefig(base_path)
 plt.show()
 
 
 #    2.3: Using statsmodels, regress the unemployment rate on the LFD of EPU-C and fixed
 #         effects for states. Include an intercept.
+
+#creating fixed effects for states
+for abbr in states_abbr:
+    if ldf_df.loc[len(ldf_df), "state"] == str(abbr):
+        ldf_df[abbr] = 1
+    else: 
+        ldf_df[abbr] = 0
+
+ldf_df = sm.add_constant(ldf_df)
+ldf_df = ldf_df.dropna()
+exog_var = list(ldf_df.columns)
+exog_var.remove("date")
+exog_var.remove("state")
+exog_var.remove("unemp_rate")
+
+states_model = sm.OLS(endog = ldf_df["unemp_rate"], exog = ldf_df[exog_var])
+states_result = states_model.fit()
+states_result.summary()
+
 #    2.4: Print the summary of the results, and write a 1-3 line comment explaining the basic
 #         interpretation of the results (e.g. coefficient, p-value, r-squared), the way you 
 #         might in an abstract.
