@@ -92,7 +92,7 @@ data.columns
 # the below regression tells us that, after controlling for acceleration and model year,
 # a one point increase in displacement (not sure what units are here) equates to a .05 decrease in mpg.
 #i.e. our regression is telling us that heavier engines are worse for mpg. note that this
-# is not statistically significant
+# is highly statistically significant.
 data = sm.add_constant(data)
 data = data.dropna()
 dis_model = sm.OLS(endog = data["mpg"], exog = data[["const", "displacement", "acceleration", "model_year"]])
@@ -108,7 +108,7 @@ plt.show()
 
 # the below regression tells us that, after controlling for acceleration and model year,
 # a one unit increase in horsepower gave us a .002 increase in mpg, and a 1 pound(?) increase
-# in car weight gave us a .006 decrease in mpg. Neither of these values are statistically significant. 
+# in car weight gave us a .006 decrease in mpg. Only the weight of the engine is statistically significant. 
 hw_model = sm.OLS(endog = data["mpg"], exog = data[["const", "horsepower", "weight", "acceleration", "model_year"]])
 hw_result = hw_model.fit()
 hw_result.summary()
@@ -239,7 +239,7 @@ ldf_df = pd.DataFrame(data = None, columns = merged_df.columns)
 states_abbr = merged_df["state"].unique()
 for abbr in states_abbr:
     holding_df = merged_df[merged_df["state"] == abbr]
-    holding_df["epu_composite"] = np.log(holding_df["epu_composite"]) - np.log(holding_df["epu_composite"].shift())
+    holding_df["epu_composite"] = np.log(holding_df.loc[:, "epu_composite"]) - np.log(holding_df.loc[:, "epu_composite"].shift())
     ldf_df = pd.concat([ldf_df, holding_df], axis = 0, ignore_index = True)
 
 ldf_df.head(50)
@@ -314,24 +314,28 @@ plt.show()
 
 #creating fixed effects for states
 for abbr in states_abbr:
-    if ldf_df.loc[len(ldf_df), "state"] == str(abbr):
-        ldf_df[abbr] = 1
-    else: 
-        ldf_df[abbr] = 0
+    ldf_df[abbr] = 0
+    ldf_df[abbr] = ldf_df["state"].apply(lambda x: 1 if x == abbr else 0)
 
+
+ldf_df.tail(50)
 ldf_df = sm.add_constant(ldf_df)
 ldf_df = ldf_df.dropna()
+
 exog_var = list(ldf_df.columns)
 exog_var.remove("date")
 exog_var.remove("state")
 exog_var.remove("unemp_rate")
+exog_var.remove("_merge")
 
 states_model = sm.OLS(endog = ldf_df["unemp_rate"], exog = ldf_df[exog_var])
 states_result = states_model.fit()
-states_result.summary()
 
 #    2.4: Print the summary of the results, and write a 1-3 line comment explaining the basic
 #         interpretation of the results (e.g. coefficient, p-value, r-squared), the way you 
 #         might in an abstract.
 
-
+states_result.summary()
+# After controlling for fixed effects, our results are that economic policy uncertainty has a negative effect on unemployment. 
+# A 1% increase in composite economic policy uncertainty leads to a -.012734 percent increase in unemployment. (unemployment rate is already in percentages)
+# Our results are highly statistically significant, and our regression has an Adj. R-Squared of .629 which indicates a high degree of variability in unemployment is explained by our exog variables. 
