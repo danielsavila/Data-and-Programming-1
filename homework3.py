@@ -157,6 +157,7 @@ plt.show()
 # labels or values overlap other chart elements, go back and adjust spacing.
 
 #again used this: https://matplotlib.org/stable/gallery/subplots_axes_and_figures/demo_constrained_layout.html#sphx-glr-gallery-subplots-axes-and-figures-demo-constrained-layout-py
+# and for saving figs to a location/file naming: https://stackoverflow.com/questions/11373610/save-matplotlib-file-to-a-directory
 
 fig, axs = plt.subplots(2, 2, layout = 'constrained')
 ax = axs[0, 0]
@@ -179,7 +180,7 @@ ax.set_xlabel("acceleration")
 
 fig.suptitle("Changes in MPG")
 fig.text(0, .5, "mpg", ha = "center")
-fig.savefig(base_path)
+fig.savefig(base_path + "/firstfig.png")
 plt.show()
 
 # Question 1.6: Are cars from the USA, Japan, or Europe the least fuel
@@ -305,7 +306,7 @@ ax = axs[4,1]
 ax.plot(kentucky["date"], kentucky["unemp_rate"], color = "black")
 ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
 
-fig.savefig(base_path)
+fig.savefig(base_path + "/secondfig.png")
 plt.show()
 
 
