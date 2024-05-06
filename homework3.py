@@ -147,7 +147,9 @@ plt.show()
 # mpg for each increase in cylinders, so we cant tell where "clustering" of observations occurs in this graph.
 
 #referenced this: https://seaborn.pydata.org/generated/seaborn.boxplot.html
-sns.boxplot(data = data, x = data["cylinders"], y = data["mpg"])
+# saving seaborn png's: https://www.statology.org/save-seaborn-plot/
+plot = sns.boxplot(data = data, x = data["cylinders"], y = data["mpg"])
+fig = plot.get_figure()
 fig.savefig(base_path + "/q1_4aplot.png")
 plt.show()
 
@@ -194,7 +196,8 @@ plt.show()
 # Question 1.6: Are cars from the USA, Japan, or Europe the least fuel
 # efficient, on average?  Answer this with a plot and a one-line comment.
 data.columns
-sns.boxplot(data = data, x = data["origin"], y = data["mpg"])
+plot = sns.boxplot(data = data, x = data["origin"], y = data["mpg"])
+fig = plot.get_figure()
 fig.savefig(base_path + "/q1_6plot.png")
 plt.show()
 #japanese cars are the most fuel effecient, they have the highest average, the highest ourliers, and the highest minimum fuel economy.
@@ -205,7 +208,8 @@ plt.show()
 # Explain in a one-line comment what this plot says about the results of 
 # question 1.6.
 
-sns.scatterplot(data = data, x = data["displacement"], y = data["mpg"], hue = "origin")
+plot = sns.scatterplot(data = data, x = data["displacement"], y = data["mpg"], hue = "origin")
+fig = plot.get_figure()
 fig.savefig(base_path + "/q1_7plot.png")
 plt.show()
 
