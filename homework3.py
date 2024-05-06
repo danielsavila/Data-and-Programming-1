@@ -83,7 +83,7 @@ plt.show()
 # against horsepower and weight.
 
 os.getcwd()
-base_path = os.getcwd()
+base_path = str(os.getcwd()) + "/"
 file_loc = os.path.join(base_path, "mpg.csv")
 
 data = pd.read_csv(file_loc)
@@ -141,7 +141,8 @@ plt.show()
 
 #referenced this: https://seaborn.pydata.org/generated/seaborn.boxplot.html
 sns.boxplot(data = data, x = data["cylinders"], y = data["mpg"])
-    
+plt.show()
+
 # Question 1.5: Continuing with the data from question 1.3, create a two-by-two 
 # grid of subplots, where each one has mpg on the y-axis and one of 
 # displacement, horsepower, weight, and acceleration on the x-axis.  To clean 
@@ -179,15 +180,14 @@ ax.set_xlabel("acceleration")
 fig.suptitle("Changes in MPG")
 fig.text(0, .5, "mpg", ha = "center")
 fig.savefig("C:/Users/AVILA/OneDrive/Documents/GitHub/Data-and-Programming-1/")
-
+plt.show()
 
 # Question 1.6: Are cars from the USA, Japan, or Europe the least fuel
 # efficient, on average?  Answer this with a plot and a one-line comment.
 data.columns
 sns.boxplot(data = data, x = data["origin"], y = data["mpg"])
-
-#japanese cars are the most fuel effecient, they have the highest average,
-# the highest ourliers, and the highest minimum fuel economy.
+plt.show()
+#japanese cars are the most fuel effecient, they have the highest average, the highest ourliers, and the highest minimum fuel economy.
 
 
 # Question 1.7: Using Seaborn, create a scatter plot of mpg versus displacement,
@@ -197,21 +197,124 @@ sns.boxplot(data = data, x = data["origin"], y = data["mpg"])
 
 groupby = data.groupby("origin")
 groupby.head()
-sns.scatterplot(data = data, x = groupby["displacement"], y = groupby["mpg"])
-#need to finish this question
+sns.scatterplot(data = data, x = data["displacement"], y = data["mpg"], hue = "origin")
+plt.show()
 
 # Question 2: The file unemp.csv contains the monthly seasonally-adjusted unemployment
 # rates for US states from January 2020 to December 2022. Load it as a dataframe, as well
 # as the data from the policy_uncertainty.xlsx file from homework 2 (you do not have to make
 # any of the changes to this data that were part of HW2, unless you need to in order to 
 # answer the following questions).
+
+
+import us
+
+unemp = pd.read_csv("unemp.csv")
+policyunc = pd.read_excel("policy_uncertainty.xlsx")
+
+
+policyunc["state"] = policyunc["state"].map(us.states.mapping("name", "abbr"), na_action = "ignore")
+policyunc["day"] = 1
+policyunc.columns = policyunc.columns.str.lower()
+policyunc["date"] = pd.to_datetime(policyunc[["year", "month", "day"]])
+policyunc.head()
+unemp.head()
+unemp.columns = unemp.columns.str.lower()
+unemp["date"] = pd.to_datetime(unemp["date"])
+
 #    2.1: Merge both dataframes together
+merged_df = unemp.merge(policyunc, how = "inner", right_on = ["state", "date"], left_on = ["state", "date"], validate = "one_to_one", indicator = True )
+merged_df["_merge"].unique()
+#did this as an inner merge because if I had NaN values with a left, right, our outer merge, I would 
+# end up removing those columns anyway. So figured I would only use the ones ethat were inner merged.
+
 #    2.2: Calculate the log-first-difference (LFD) of the EPU-C data
+merged_df.columns
+merged_df = merged_df.drop(["year", "month", "day"], axis = 1)
+groupbyy = merged_df.groupby("state")
+groupbyy["epu_composite"] = np.log(groupbyy["epu_composite"]) - np.log(groupbyy["epu_composite"].shift())
+states_abbr = merged_df["state"].unique()
+
+#need to create a new dataframe so that I can get the log first difference of each state seperately
+# without using the last value of ex. Alabama being used to calculate the first value of Arkansas
+
+ldf_df = pd.DataFrame(data = None, columns = merged_df.columns)
+for abbr in states_abbr:
+    holding_df = merged_df[merged_df["state"] == abbr]
+    holding_df["epu_composite"] = np.log(holding_df["epu_composite"]) - np.log(holding_df["epu_composite"].shift())
+    ldf_df = pd.concat([ldf_df, holding_df], axis = 0, ignore_index = True)
+
+ldf_df.head(50)
+
 #    2.2: Select five states and create one Matplotlib figure that shows the unemployment rate
 #         and the LFD of EPU-C over time for each state. Save the figure and commit it with 
 #         your code.
+
+illinois = ldf_df[ldf_df["state"] == "IL"]
+michigan = ldf_df[ldf_df["state"] == "MI"]
+wisconsin = ldf_df[ldf_df["state"] == "WI"]
+vermont = ldf_df[ldf_df["state"] == "VT"]
+kentucky = ldf_df[ldf_df["state"] == "KY"]
+
+illinois.columns
+illinois["epu_composite"]
+
+
+fig, axs = plt.subplots(5, 2, layout = "constrained", figsize = (10, 5))
+
+ax = axs[0, 0]
+ax.plot(illinois["date"], illinois["epu_composite"], color = "red", label = "illinois")
+ax.set_xticks([])
+ax.set_ylabel("illinois")
+
+ax = axs[0,1]
+ax.plot(illinois["date"], illinois["unemp_rate"], color = "black")
+ax.set_xticks([])
+
+ax = axs[1,0]
+ax.plot(michigan["date"], michigan["epu_composite"], color = "blue", label = "michigan")
+ax.set_xticks([])
+ax.set_ylabel("michigan")
+
+ax = axs[1,1]
+ax.plot(michigan["date"], michigan["unemp_rate"], color = "black")
+ax.set_xticks([])
+
+ax = axs[2,0]
+ax.plot(wisconsin["date"], wisconsin["epu_composite"], color = "orange", label = "wisconsin")
+ax.set_xticks([])
+ax.set_ylabel("wisconsin")
+
+ax = axs[2,1]
+ax.plot(wisconsin["date"], wisconsin["unemp_rate"], color = "black")
+ax.set_xticks([])
+
+ax = axs[3,0]
+ax.plot(vermont["date"], vermont["epu_composite"], color = "purple", label = "vermont")
+ax.set_xticks([])
+ax.set_ylabel("vermont")
+
+ax = axs[3,1]
+ax.plot(vermont["date"], vermont["unemp_rate"], color = "black")
+ax.set_xticks([])
+
+ax = axs[4,0]
+ax.plot(kentucky["date"], kentucky["epu_composite"], color = "green", label = "kentucky")
+ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
+ax.set_ylabel("kentucky")
+
+ax = axs[4,1]
+ax.plot(kentucky["date"], kentucky["unemp_rate"], color = "black")
+ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
+
+fig.savefig("C:/Users/AVILA/OneDrive/Documents/GitHub/Data-and-Programming-1/")
+plt.show()
+
+
 #    2.3: Using statsmodels, regress the unemployment rate on the LFD of EPU-C and fixed
 #         effects for states. Include an intercept.
 #    2.4: Print the summary of the results, and write a 1-3 line comment explaining the basic
 #         interpretation of the results (e.g. coefficient, p-value, r-squared), the way you 
 #         might in an abstract.
+
+
