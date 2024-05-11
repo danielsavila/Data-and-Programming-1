@@ -39,9 +39,10 @@ import pandas_datareader.data as web
 from pandas_datareader import wb
 import datetime
 import pandas as pd
-import requests
 import os
-import csv
+import requests
+from bs4 import BeautifulSoup
+import numpy as np
 
 #used documentation to get data https://pandas-datareader.readthedocs.io/en/latest/remote_data.html#remote-data-fred
 
@@ -138,12 +139,65 @@ data.to_csv("q1.csv", na_rep = "NA")
 #     the columns already specified). The first string that gets added should be 
 #     approximately in the form of: 
 #     'required,PPHA 30535 or PPHA 30537 Data and Programming for Public Policy I'
+
 #   - Hint: recall that \n is the new-line character in text
+
 #   - You do not have to clean up the text of each bullet point, or split the details out
 #     of it, like the course code and course description, but it's a good exercise to
 #     think about.
+
 #   - Using context management, write the data out to a file named q2.csv
+
 #   - Finally, import Pandas and test loading q2.csv with the read_csv function.
 #     Use asserts to test that the dataframe has 18 rows and two columns.
 
+url = "https://harris.uchicago.edu/academics/design-your-path/specializations/specialization-data-analytics"
+response = requests.get(url)
+data = response.content
+    
+soup = BeautifulSoup(data, "lxml")
+"Required courses" in soup.text
+"PPHA 30545" in soup.text
+
+ul42 = soup.find_all("ul")[42].find_all("li")
+ul43 = soup.find_all("ul")[43].find_all("li")
+ul44 = soup.find_all("ul")[44].find_all("li")
+ul42
+
+required = []
+for row in soup.find_all("ul")[42:44]:
+    li_tags = row.find_all("li")
+    required.append([val.text for val in li_tags])
+
+elective = []
+for row in soup.find_all("ul")[44:45]:
+    li_tags = row.find_all("li")
+    elective.append([val.text for val in li_tags])
+
+required
+elective
+
+# for this list comprehension https://stackoverflow.com/questions/25674169/how-does-the-list-comprehension-to-flatten-a-python-list-work
+flattened_required = [i for x in required for i in x]
+flattened_elective = [i for x in elective for i in x]
+
+required_list = [["required", i] for i in flattened_required]
+elective_list = [["elective", i] for i in flattened_elective]
+required_list
+elective_list
+
+
+dataframe = pd.DataFrame(columns = "type, description")
+q2 = "q2.csv"
 csv_doc = ['type,description']
+
+csv_doc = csv_doc + required_list + elective_list
+with open(q2) as file:
+    writer = csv.writer("q2.csv")
+    writer.writerow(["type, description"])
+    for row in csv_doc:
+        writer.writerow(row)
+
+test_data = pd.read_csv("q2.csv")
+
+test_data
