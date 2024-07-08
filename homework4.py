@@ -42,7 +42,7 @@ import pandas as pd
 import os
 import requests
 from bs4 import BeautifulSoup
-import numpy as np
+import csv
 
 #used documentation to get data https://pandas-datareader.readthedocs.io/en/latest/remote_data.html#remote-data-fred
 
@@ -128,7 +128,9 @@ data.head()
 data.columns
 path
 
+# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html
 data.to_csv("q1.csv", na_rep = "NA")
+#couldnt get the way as written in the lecture files to work due to a permission error
 
 # Question 2: On the following Harris School website:
 # https://harris.uchicago.edu/academics/design-your-path/certificates/certificate-data-analytics
@@ -186,18 +188,16 @@ elective_list = [["elective", i] for i in flattened_elective]
 required_list
 elective_list
 
-
-dataframe = pd.DataFrame(columns = "type, description")
 q2 = "q2.csv"
-csv_doc = ['type,description']
 
-csv_doc = csv_doc + required_list + elective_list
-with open(q2) as file:
-    writer = csv.writer("q2.csv")
-    writer.writerow(["type, description"])
-    for row in csv_doc:
-        writer.writerow(row)
+combined_list =  required_list + elective_list
+df = pd.DataFrame(combined_list, columns = ("type", "description"))
 
-test_data = pd.read_csv("q2.csv")
+df
+# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html
+df.to_csv("q2.csv", na_rep = "NA")
+# couldnt get the way as written in the lecture files to work due to a permission error
 
-test_data
+data = pd.read_csv("q2.csv")
+data.shape
+assert data.shape == (18, 3) #two columns and an index
